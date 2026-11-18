@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: go-partiel-lots
+expected_outcome: |
+  Sur un run existant avec GO_PENDING.md, ne lance que les lots L1 et L3, chacun par un agent d'amélioration distinct, sur sandbox, puis re-teste les personas impactées.
