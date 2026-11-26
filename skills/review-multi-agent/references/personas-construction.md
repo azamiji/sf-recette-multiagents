@@ -1,4 +1,4 @@
-# Personas BTP / Construction — 20 rôles
+# Catalogue BTP / Construction — 20 rôles détaillés (exemple et réservoir pour la génération dynamique)
 
 Format : chaque persona commence par `## <id> — <Libellé>` (l'id est utilisé par `init_run.py` pour nommer briefs et rapports ; ne le change pas sans adapter les fichiers du run).
 

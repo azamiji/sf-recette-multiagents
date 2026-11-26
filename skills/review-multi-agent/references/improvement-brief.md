@@ -26,7 +26,7 @@ Les « Décisions à prendre » listées dans le rapport ne sont jamais traitée
 # Lot {{lot_id}} — {{lot_titre}}
 
 Tu corriges les constats suivants issus d'une recette multi-personas de l'application Salesforce
-« {{app_name}} » (domaine construction). Les autres lots sont traités en parallèle par d'autres
+« {{app_name}} » (domaine {{domaine}}). Les autres lots sont traités en parallèle par d'autres
 agents sur d'autres composants : ne modifie QUE les composants listés ci-dessous.
 
 ## Constats à traiter

@@ -216,8 +216,9 @@ def md_table(rows, headers):
     return "\n".join(out)
 
 
-def render_md(run_id, st, groupes, lots, erreurs):
+def render_md(run_id, st, groupes, lots, erreurs, meta):
     L = [f"# Recette multi-agents — rapport consolidé (run {run_id})", "",
+         f"Domaine : **{meta.get('domaine') or 'non précisé'}** · Consigne : {meta.get('consigne') or 'aucune (toute l’org)'}", "",
          "<!-- SYNTHESE_EXECUTIVE : à rédiger par l'orchestrateur -->", "",
          f"**Verdict global : {st['verdict_global']}** — {len(st['par_persona'])} personas, "
          f"{st['nb_constats_bruts']} constats bruts → {st['nb_constats_dedupliques']} après dédoublonnage.", "",
@@ -277,7 +278,7 @@ return (isNaN(p)||isNaN(q)?p.localeCompare(q):p-q)*(a==='1'?1:-1)});r.forEach(e=
 const f=document.getElementById('f');if(f)f.oninput=()=>{const v=f.value.toLowerCase();document.querySelectorAll('#tc tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(v)?'':'none')}"""
 
 
-def render_html(run_id, st, groupes, lots, erreurs):
+def render_html(run_id, st, groupes, lots, erreurs, meta):
     e = lambda x: html.escape(str(x if x is not None else "–"))  # noqa: E731
     badge = lambda x: f'<span class="b {e(x)}">{e(x)}</span>'  # noqa: E731
 
@@ -318,7 +319,7 @@ def render_html(run_id, st, groupes, lots, erreurs):
     err = ("<h2>Anomalies de format</h2><ul>" + "".join(f"<li>{e(x)}</li>" for x in erreurs) + "</ul>") if erreurs else ""
     return f"""<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Recette multi-agents — run {e(run_id)}</title><style>{CSS}</style></head><body><main>
-<h1>Recette multi-agents — rapport consolidé</h1><p>Run {e(run_id)} · généré le {dt.datetime.now():%d/%m/%Y %H:%M}</p>
+<h1>Recette multi-agents — rapport consolidé</h1><p>Run {e(run_id)} · domaine <b>{e(meta.get("domaine") or "non précisé")}</b> · consigne : {e(meta.get("consigne") or "aucune (toute l'org)")} · généré le {dt.datetime.now():%d/%m/%Y %H:%M}</p>
 <div class="kpis">{kpis}</div>{manq}
 <h2>Vue par persona</h2>{table('tp', ['Persona', 'Verdict', 'Accès', *SCORES, 'Parcours OK', 'Constats', 'Synthèse'], pers)}
 <h2>Décisions à prendre</h2><ul>{dec}</ul>
@@ -364,8 +365,8 @@ def main():
     (run_dir / "consolidated.json").write_text(json.dumps(cons, ensure_ascii=False, indent=2), encoding="utf-8")
     (run_dir / "backlog.json").write_text(json.dumps({"run_id": run_id, "lots": lots, "constats": groupes},
                                                      ensure_ascii=False, indent=2), encoding="utf-8")
-    (run_dir / "rapport.md").write_text(render_md(run_id, st, groupes, lots, erreurs), encoding="utf-8")
-    (run_dir / "rapport.html").write_text(render_html(run_id, st, groupes, lots, erreurs), encoding="utf-8")
+    (run_dir / "rapport.md").write_text(render_md(run_id, st, groupes, lots, erreurs, meta), encoding="utf-8")
+    (run_dir / "rapport.html").write_text(render_html(run_id, st, groupes, lots, erreurs, meta), encoding="utf-8")
     (run_dir / "GO_PENDING.md").write_text(render_go(run_id, st, lots, groupes), encoding="utf-8")
     print(json.dumps({"verdict_global": st["verdict_global"], "personas": len(reports),
                       "constats_bruts": st["nb_constats_bruts"], "constats": len(groupes),

@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: perimetre-app-sales
+expected_outcome: |
+  Ne repose pas la question du domaine, filtre la carte de l'org sur l'app Sales, génère des personas dont un CEO, majoritairement issus des profils réels qui utilisent l'app Sales, présente la liste puis lance un agent par persona, consolide et s'arrête sur le GO.

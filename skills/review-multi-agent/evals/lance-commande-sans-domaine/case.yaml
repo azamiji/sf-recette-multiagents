@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: lance-commande-sans-domaine
+expected_outcome: |
+  Sans argument, l'orchestrateur demande le domaine métier et propose une consigne de périmètre facultative avant toute connexion lourde ou génération de personas.

@@ -47,9 +47,13 @@ def hero():
     for i, (a, l, c) in enumerate(PERSONAS):
         ang = -math.pi / 2 + i * 2 * math.pi / 20
         x, y = cx + R * math.cos(ang), cy + R * math.sin(ang)
-        fs = 9 if len(a) >= 4 else 10.5
-        b.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="19" fill="#0B1220" stroke="{c}" stroke-width="2.5"/>'
-                 f'<text x="{x:.1f}" y="{y+3.8:.1f}" text-anchor="middle" font-size="{fs}" font-weight="700" fill="{c}">{a}</text>')
+        if i == 0:
+            b.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="23" fill="#FBBF24" stroke="#FDE68A" stroke-width="2.5"/>'
+                     f'<text x="{x:.1f}" y="{y+4.2:.1f}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#422006">CEO</text>')
+        else:
+            b.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="19" fill="#0B1220" stroke="{c}" stroke-width="2.5"/>'
+                     f'<circle cx="{x:.1f}" cy="{y-4:.1f}" r="4.2" fill="{c}"/>'
+                     f'<path d="M{x-7.5:.1f} {y+9:.1f}a7.5 6.5 0 0 1 15 0z" fill="{c}"/>')
     b.append(f'<circle cx="{cx}" cy="{cy}" r="56" fill="url(#core)" filter="url(#sh)"/>'
              f'<circle cx="{cx}" cy="{cy}" r="56" fill="none" stroke="#BAE6FD" stroke-opacity="0.6" stroke-width="2">'
              f'<animate attributeName="r" values="56;70;56" dur="3s" repeatCount="indefinite"/>'
@@ -58,12 +62,12 @@ def hero():
              f'<text x="{cx}" y="{cy+12}" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Orchestrateur</text>')
     # left text
     b.append('<rect x="64" y="70" width="210" height="30" rx="15" fill="#0EA5E9" fill-opacity="0.15" stroke="#38BDF8" stroke-opacity="0.5"/>'
-             '<text x="169" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#7DD3FC" letter-spacing="2">SKILL CLAUDE · UAT</text>')
+             '<text x="169" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#7DD3FC" letter-spacing="1" font-family="ui-monospace,Menlo,Consolas,monospace">/review-multi-agent</text>')
     b.append('<text x="64" y="160" font-size="50" font-weight="800" fill="#F8FAFC">Recette Salesforce</text>'
              '<text x="64" y="218" font-size="50" font-weight="800" fill="url(#core)">multi-agents</text>')
-    b.append('<text x="64" y="262" font-size="20" fill="#94A3B8">20 personas BTP testent ton app, chacun avec ses droits.</text>'
-             '<text x="64" y="290" font-size="20" fill="#94A3B8">Un rapport. Ton GO. Les corrections en parallèle.</text>')
-    pills = [("20", "agents", "#38BDF8"), ("5", "axes notés", "#A78BFA"), ("P0→P3", "priorités", "#F59E0B"), ("1", "GO", "#22C55E")]
+    b.append('<text x="64" y="262" font-size="20" fill="#94A3B8">Choisis ton domaine : 20 personas naissent de ton org</text>'
+             '<text x="64" y="290" font-size="20" fill="#94A3B8">et testent ton app. Un rapport. Ton GO. Corrections en parallèle.</text>')
+    pills = [("20", "agents", "#38BDF8"), ("1", "CEO toujours", "#FBBF24"), ("∞", "domaines", "#A78BFA"), ("1", "GO", "#22C55E")]
     x = 64
     for big, small, c in pills:
         w = 40 + len(big) * 14 + len(small) * 8
@@ -76,6 +80,12 @@ def hero():
 # ------------------------------------------------------------------ WORKFLOW
 def icon(kind, x, y, c):
     s = f'stroke="{c}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"'
+    if kind == "ask":
+        return f'<g transform="translate({x},{y})"><path d="M-15 -11H15V8H-3L-10 15V8H-15Z" {s}/><text x="0" y="3" text-anchor="middle" font-size="13" font-weight="800" fill="{c}" stroke="none">?</text></g>'
+    if kind == "people":
+        return (f'<g transform="translate({x},{y})"><circle cx="0" cy="-7" r="6" fill="#FBBF24"/><path d="M-10 13a10 9 0 0 1 20 0z" fill="#FBBF24"/>'
+                f'<circle cx="-14" cy="-3" r="4" fill="{c}"/><path d="M-21 12a7 6 0 0 1 14 0z" fill="{c}"/>'
+                f'<circle cx="14" cy="-3" r="4" fill="{c}"/><path d="M7 12a7 6 0 0 1 14 0z" fill="{c}"/></g>')
     if kind == "check":   # radar / preflight
         return f'<g transform="translate({x},{y})"><circle r="14" {s}/><circle r="6" {s}/><path d="M0 0L11 -9" {s}/></g>'
     if kind == "agents":
@@ -98,19 +108,20 @@ def icon(kind, x, y, c):
 def workflow():
     W, H = 1280, 470
     steps = [
-        ("check", "#38BDF8", "Pré-vol", ["Org sandbox vérifiée", "MCP détectés", "1 utilisateur / rôle"]),
-        ("agents", "#A78BFA", "20 agents", ["En parallèle", "Indépendants", "Vrais parcours métier"]),
-        ("merge", "#F59E0B", "Consolidation", ["Doublons fusionnés", "Priorités P0 → P3", "Lots sans conflit"]),
-        ("go", "#22C55E", "TON GO", ["GO · GO L1,L3", "GO P0 · NO GO", "Rien ne bouge avant"]),
-        ("build", "#F472B6", "Corrections", ["1 agent / lot", "1 branche / lot", "Tests Apex ≥ 85 %"]),
-        ("retest", "#34D399", "Re-test", ["Personas impactées", "Régressions", "Rapport final"]),
+        ("ask", "#FBBF24", "Cadrage", ["Domaine ?", "Consigne libre", "Ex. « app Sales »"]),
+        ("check", "#38BDF8", "Connexion", ["Sandbox vérifiée", "MCP détectés", "Carte du périmètre"]),
+        ("people", "#FB923C", "Personas", ["CEO toujours", "Le reste : ton org", "Filtrés périmètre"]),
+        ("agents", "#A78BFA", "20 agents", ["En parallèle", "Indépendants", "Vrais parcours"]),
+        ("merge", "#F59E0B", "Rapport", ["Doublons fusionnés", "P0 → P3", "Lots sans conflit"]),
+        ("go", "#22C55E", "TON GO", ["GO · GO L1,L3", "GO P0 · NO GO", "Rien avant"]),
+        ("build", "#F472B6", "Correction", ["1 agent / lot", "Sandbox seule", "Re-test ciblé"]),
     ]
     b = ['<text x="640" y="58" text-anchor="middle" font-size="28" font-weight="800" fill="#F8FAFC">Le cycle complet</text>',
-         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">de la découverte de l\'org au rapport final</text>']
-    cw, ch, gap, x0, y0 = 182, 290, 20, 47, 130
+         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">une commande, deux questions, zéro modification sans ton GO</text>']
+    cw, ch, gap, x0, y0 = 160, 290, 14, 31, 130
     # connecting rail
-    b.append(f'<line x1="{x0+cw/2}" y1="{y0+62}" x2="{x0+5*(cw+gap)+cw/2}" y2="{y0+62}" stroke="#1E293B" stroke-width="4"/>')
-    b.append(f'<line x1="{x0+cw/2}" y1="{y0+62}" x2="{x0+5*(cw+gap)+cw/2}" y2="{y0+62}" stroke="#38BDF8" stroke-width="4" stroke-dasharray="10 14" stroke-opacity="0.7">'
+    b.append(f'<line x1="{x0+cw/2}" y1="{y0+62}" x2="{x0+6*(cw+gap)+cw/2}" y2="{y0+62}" stroke="#1E293B" stroke-width="4"/>')
+    b.append(f'<line x1="{x0+cw/2}" y1="{y0+62}" x2="{x0+6*(cw+gap)+cw/2}" y2="{y0+62}" stroke="#38BDF8" stroke-width="4" stroke-dasharray="10 14" stroke-opacity="0.7">'
              f'<animate attributeName="stroke-dashoffset" from="48" to="0" dur="1.2s" repeatCount="indefinite"/></line>')
     for i, (ic, c, title, lines) in enumerate(steps):
         x = x0 + i * (cw + gap)
@@ -123,19 +134,19 @@ def workflow():
                      f'<text x="{x+cw/2}" y="{y0+5}" text-anchor="middle" font-size="12" font-weight="800" fill="#052e16" letter-spacing="1.5">STOP</text>')
         b.append(f'<circle cx="{x+cw/2}" cy="{y0+62}" r="34" fill="#0B1220" stroke="{c}" stroke-width="2.5"/>')
         b.append(icon(ic, x + cw / 2, y0 + 62, c))
-        b.append(f'<text x="{x+22}" y="{y0+130}" font-size="13" font-weight="700" fill="{c}" letter-spacing="2">0{i+1}</text>')
-        b.append(f'<text x="{x+22}" y="{y0+160}" font-size="22" font-weight="800" fill="#F8FAFC">{title}</text>')
+        b.append(f'<text x="{x+18}" y="{y0+130}" font-size="13" font-weight="700" fill="{c}" letter-spacing="2">0{i+1}</text>')
+        b.append(f'<text x="{x+18}" y="{y0+160}" font-size="21" font-weight="800" fill="#F8FAFC">{title}</text>')
         for j, t in enumerate(lines):
             yy = y0 + 196 + j * 28
-            b.append(f'<circle cx="{x+27}" cy="{yy-5}" r="3.5" fill="{c}"/><text x="{x+40}" y="{yy}" font-size="14.5" fill="#CBD5E1">{t}</text>')
+            b.append(f'<circle cx="{x+22}" cy="{yy-5}" r="3.5" fill="{c}"/><text x="{x+33}" y="{yy}" font-size="13.5" fill="#CBD5E1">{t}</text>')
     return svg(W, H, "".join(b))
 
 
 # ------------------------------------------------------------------ PERSONAS
 def personas():
     W, H = 1280, 700
-    b = ['<text x="640" y="58" text-anchor="middle" font-size="28" font-weight="800" fill="#F8FAFC">20 personas, 20 regards</text>',
-         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">chacun teste son domaine avec ses propres droits</text>']
+    b = ['<text x="640" y="58" text-anchor="middle" font-size="28" font-weight="800" fill="#F8FAFC">Exemple : domaine BTP</text>',
+         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">personas générés depuis l\'org et le périmètre · le CEO est toujours là</text>']
     colw, x0, y0 = 196, 27, 124
     for gi, (gname, c, ps) in enumerate(GROUPS):
         x = x0 + gi * (colw + 10)

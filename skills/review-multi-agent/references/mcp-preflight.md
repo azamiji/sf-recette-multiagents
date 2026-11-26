@@ -8,6 +8,7 @@ Repère les outils disponibles (y compris différés : cherche-les avec ToolSear
 
 | Capacité | Exemples d'outils (selon l'installation) | Usage dans la recette |
 |---|---|---|
+| MCP d'org « à playbooks » | outils `discover` / `describe` / `dispatch_readonly` / `dispatch` | à utiliser en priorité : chercher le playbook (discover), le lire (describe), exécuter en lecture (`dispatch_readonly`) ; `dispatch` (écriture) seulement pour les données de test préfixées en sandbox, et en phase 5 après GO |
 | Requête données | Salesforce DX MCP (`run_soql_query`…), `sf data query` | vérifier les données, droits, résultats des parcours |
 | Metadata | Salesforce DX MCP (`retrieve_metadata`…), `sf project retrieve` | carte de l'app, composants suspects |
 | Déploiement / tests | Salesforce DX MCP (`deploy_metadata`, `run_apex_test`…), `sf project deploy`, `sf apex run test` | phase 5 uniquement |
@@ -36,7 +37,9 @@ Requêtes utiles (Tooling API si disponible) :
 - Rapports / dashboards : `SELECT Name, FolderName FROM Report` / `FROM Dashboard`
 - Erreurs récentes : `SELECT … FROM FlowInterview WHERE …` ou e-mails d'erreur Apex si accessibles
 
-Résume par **domaine métier** (achats, chantier, finance, sous-traitance, commercial, QHSE, SAV, RH, juridique) : objets, flows, pages, rapports. C'est la référence pour juger la couverture.
+**Périmètre** : si la consigne limite la recette (une app, un processus, une exclusion), filtre la carte : onglets de l'app (`AppMenuItem` + `TabDefinition` / navigation de l'app), objets de ces onglets, flows déclenchés sur ces objets, pages, permission sets qui donnent accès à l'app. Note ce qui a été exclu.
+
+Résume par **domaine fonctionnel** (achats, chantier, finance, sous-traitance, commercial, QHSE, SAV, RH, juridique) : objets, flows, pages, rapports. C'est la référence pour juger la couverture.
 
 ## 4. Mapping persona → utilisateur
 
