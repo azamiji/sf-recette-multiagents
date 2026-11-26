@@ -4,12 +4,12 @@ Format : chaque persona commence par `## <id> — <Libellé>` (l'id est utilisé
 
 Les 8 premiers sont ceux demandés ; les 12 suivants couvrent le reste du cycle d'un projet de construction (avant-vente → études → exécution → réception → garantie) et les fonctions de contrôle. Les parcours sont des **attendus métier** : l'agent les rattache aux objets/flows réellement présents dans l'org, et un parcours sans support dans l'app devient un constat `MANQUE_FONCTIONNEL`.
 
-Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (portail), **A** = admin.
+Type : **I** = fonction interne, **E** = acteur externe (portail), **A** = administration. Tous sont testés via le même utilisateur MCP.
 
 ---
 
 ## ceo — CEO / Directeur général
-- Accès : I — profil direction, lecture large
+- Type : I — direction
 - Mission : piloter le portefeuille de chantiers, la marge et les risques en un coup d'œil.
 - Parcours :
   1. Ouvrir l'app et trouver en < 3 clics un tableau de bord portefeuille (CA, marge prévisionnelle vs réalisée, avancement, retards).
@@ -20,7 +20,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : fraîcheur des données des dashboards, cohérence des chiffres entre rapports, temps de chargement, lisibilité.
 
 ## directeur_achats — Directeur des achats
-- Accès : I
+- Type : I
 - Mission : définir la politique achats, piloter les acheteurs, les fournisseurs stratégiques et les économies.
 - Parcours :
   1. Tableau de bord achats : volume engagé, économies vs budget, délais, taux de litiges.
@@ -31,7 +31,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : délégations de pouvoir respectées, traçabilité des approbations, doublons fournisseurs.
 
 ## daf — Directeur administratif et financier
-- Accès : I
+- Type : I
 - Mission : maîtriser trésorerie, engagements, facturation et rentabilité.
 - Parcours :
   1. Vue engagements vs budget par chantier et global.
@@ -42,7 +42,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : exactitude des montants, devises/TVA, droits d'accès aux données financières, piste d'audit.
 
 ## acheteur — Acheteur
-- Accès : I
+- Type : I
 - Mission : transformer les besoins chantier en commandes au meilleur coût et dans les délais.
 - Parcours :
   1. Recevoir une demande d'achat issue d'un chantier et la qualifier.
@@ -53,7 +53,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : nombre de clics/saisies, pré-remplissage, recherche fournisseur/article, validations bloquantes injustifiées.
 
 ## fournisseur — Fournisseur (externe)
-- Accès : E — portail fournisseur
+- Type : E — portail fournisseur
 - Mission : répondre aux consultations, confirmer les commandes, déposer factures et documents.
 - Parcours :
   1. Se connecter au portail et voir ses consultations/commandes en cours.
@@ -64,7 +64,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : ne voir QUE ses données (cloisonnement), ergonomie pour un non-initié, mobile, langue.
 
 ## comptable — Comptable
-- Accès : I
+- Type : I
 - Mission : rapprocher factures, commandes et réceptions ; préparer les paiements.
 - Parcours :
   1. Rapprochement 3 voies : commande ↔ bon de réception ↔ facture ; gestion des écarts.
@@ -75,7 +75,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : arrondis, TVA, numérotation, verrouillage des enregistrements validés, exports.
 
 ## chef_projet — Chef de projet
-- Accès : I
+- Type : I
 - Mission : piloter un projet de bout en bout : planning, budget, ressources, client.
 - Parcours :
   1. Créer/ouvrir un projet, définir lots, budget et jalons.
@@ -86,7 +86,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : vues consolidées, cohérence budget/engagé/facturé, collaboration (Chatter, notifications).
 
 ## chef_chantier — Chef de chantier
-- Accès : I — principalement mobile
+- Type : I — principalement mobile
 - Mission : faire avancer le chantier au quotidien, remonter besoins et aléas.
 - Parcours :
   1. Sur mobile : créer une demande de matériel/matériaux depuis le chantier.
@@ -97,7 +97,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : utilisabilité mobile, mode hors-ligne, nombre de champs obligatoires, rapidité, gros boutons.
 
 ## conducteur_travaux — Conducteur de travaux
-- Accès : I
+- Type : I
 - Mission : coordonner plusieurs chantiers, sous-traitants et approvisionnements.
 - Parcours :
   1. Vue multi-chantiers : planning, alertes retard, besoins non couverts.
@@ -108,7 +108,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : vues de liste filtrées, approbations en masse, notifications pertinentes.
 
 ## controleur_gestion — Contrôleur de gestion
-- Accès : I
+- Type : I
 - Mission : fiabiliser les prévisions et analyser les écarts de marge.
 - Parcours :
   1. Construire/éditer un rapport marge par chantier, par lot, par période.
@@ -119,7 +119,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : types de rapports disponibles, champs calculés, historique, performance des rapports.
 
 ## responsable_qhse — Responsable QHSE
-- Accès : I
+- Type : I
 - Mission : sécurité, qualité et environnement sur les chantiers.
 - Parcours :
   1. Enregistrer un accident / presqu'accident et lancer l'analyse.
@@ -130,7 +130,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : confidentialité des données accident, rappels d'échéances, traçabilité.
 
 ## responsable_logistique — Responsable logistique / magasin
-- Accès : I
+- Type : I
 - Mission : gérer stocks, matériel et engins entre dépôt et chantiers.
 - Parcours :
   1. Consulter le stock d'un article et le réserver pour un chantier.
@@ -141,7 +141,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : temps réel, unités de mesure, scan code-barres/QR sur mobile.
 
 ## economiste — Économiste de la construction / Métreur
-- Accès : I
+- Type : I
 - Mission : chiffrer les affaires et fournir le budget d'exécution.
 - Parcours :
   1. Construire un DPGF/devis quantitatif (lots, ouvrages, quantités, prix unitaires).
@@ -152,7 +152,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : import/export Excel, saisie en masse, calculs, versions de chiffrage.
 
 ## charge_affaires — Chargé d'affaires / Commercial
-- Accès : I
+- Type : I
 - Mission : détecter et gagner les affaires (appels d'offres publics et privés).
 - Parcours :
   1. Créer une opportunité à partir d'un appel d'offres (DCE, date limite, maître d'ouvrage).
@@ -163,7 +163,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : passage opportunité → projet sans ressaisie, rappels d'échéances, doublons de comptes.
 
 ## sous_traitant — Sous-traitant (externe)
-- Accès : E — portail
+- Type : E — portail
 - Mission : exécuter son lot, déclarer son avancement, être payé.
 - Parcours :
   1. Voir son contrat de sous-traitance, ses avenants et le planning de ses interventions.
@@ -174,7 +174,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : cloisonnement strict entre sous-traitants, simplicité, alertes de documents expirés.
 
 ## maitre_ouvrage — Client / Maître d'ouvrage (externe)
-- Accès : E — portail client
+- Type : E — portail client
 - Mission : suivre son projet, valider, payer.
 - Parcours :
   1. Consulter l'avancement, photos et planning de son projet.
@@ -185,7 +185,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : image de marque, clarté, aucune donnée interne (marges, coûts) visible.
 
 ## responsable_sav — Responsable SAV / Garanties
-- Accès : I
+- Type : I
 - Mission : réception, levée des réserves, garanties (parfait achèvement, biennale, décennale).
 - Parcours :
   1. Enregistrer le PV de réception avec réserves.
@@ -196,7 +196,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : lien réserve ↔ sous-traitant ↔ retenue de garantie, SLA, notifications.
 
 ## responsable_rh — Responsable RH / Paie chantier
-- Accès : I
+- Type : I
 - Mission : affecter le personnel, gérer intérim, pointages et déplacements.
 - Parcours :
   1. Affecter un salarié/compagnon à un chantier.
@@ -207,7 +207,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : confidentialité des données RH (sharing, FLS), exports, cohérence avec le pointage chantier.
 
 ## juriste_contrats — Juriste / Contract manager
-- Accès : I
+- Type : I
 - Mission : sécuriser marchés, contrats de sous-traitance, cautions et contentieux.
 - Parcours :
   1. Gérer un marché (pièces, clauses, pénalités, révision de prix).
@@ -218,7 +218,7 @@ Accès : **I** = utilisateur interne, **E** = externe via Experience Cloud (port
 - Vigilance : versions de documents, droits d'accès restreints, journalisation.
 
 ## admin_salesforce — Administrateur Salesforce
-- Accès : A
+- Type : A
 - Mission : vérifier la santé technique, la sécurité et la maintenabilité.
 - Parcours :
   1. Revue profils/permission sets vs personas : excès de droits, accès manquants, « Modify All Data » distribué.

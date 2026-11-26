@@ -19,6 +19,7 @@ DEFS = """<defs>
 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#070B16"/><stop offset="1" stop-color="#101B33"/></linearGradient>
 <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#38BDF8" stop-opacity="0.55"/><stop offset="1" stop-color="#38BDF8" stop-opacity="0"/></radialGradient>
 <linearGradient id="core" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38BDF8"/><stop offset="1" stop-color="#6366F1"/></linearGradient>
+<linearGradient id="sf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FB6F0"/><stop offset="1" stop-color="#0176D3"/></linearGradient>
 <linearGradient id="go" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22C55E"/><stop offset="1" stop-color="#10B981"/></linearGradient>
 <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#1E293B" stroke-width="1" opacity="0.6"/></pattern>
 <filter id="sh" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.45"/></filter>
@@ -32,18 +33,24 @@ def svg(w, h, body):
 
 
 # ------------------------------------------------------------------ HERO
+def cloud(cx, cy, k, fill, extra=""):
+    parts = [(-1.05, 0.25, 0.62), (-0.45, -0.25, 0.78), (0.35, -0.35, 0.9), (1.05, 0.15, 0.68), (0.0, 0.35, 0.75)]
+    out = "".join(f'<circle cx="{cx+dx*k:.1f}" cy="{cy+dy*k:.1f}" r="{r*k:.1f}" fill="{fill}"/>' for dx, dy, r in parts)
+    out += f'<rect x="{cx-1.05*k:.1f}" y="{cy+0.1*k:.1f}" width="{2.1*k:.1f}" height="{0.85*k:.1f}" rx="{0.42*k:.1f}" fill="{fill}"/>'
+    return f'<g {extra}>{out}</g>'
+
+
 def hero():
     W, H = 1280, 440
-    cx, cy, R = 960, 220, 165
+    cx, cy, R = 955, 225, 168
     b = []
-    b.append(f'<circle cx="{cx}" cy="{cy}" r="240" fill="url(#glow)"/>')
+    b.append(f'<circle cx="{cx}" cy="{cy}" r="250" fill="url(#glow)"/>')
     b.append(f'<circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="#1E3A5F" stroke-width="1.5" stroke-dasharray="3 6"/>')
-    b.append(f'<circle cx="{cx}" cy="{cy}" r="{R-70}" fill="none" stroke="#1E3A5F" stroke-width="1"/>')
     for i, (a, l, c) in enumerate(PERSONAS):
         ang = -math.pi / 2 + i * 2 * math.pi / 20
         x, y = cx + R * math.cos(ang), cy + R * math.sin(ang)
-        b.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="{c}" stroke-opacity="0.35" stroke-width="1.5">'
-                 f'<animate attributeName="stroke-opacity" values="0.15;0.6;0.15" dur="3s" begin="{i*0.15:.2f}s" repeatCount="indefinite"/></line>')
+        b.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#00A1E0" stroke-opacity="0.35" stroke-width="1.5">'
+                 f'<animate attributeName="stroke-opacity" values="0.1;0.7;0.1" dur="3s" begin="{i*0.15:.2f}s" repeatCount="indefinite"/></line>')
     for i, (a, l, c) in enumerate(PERSONAS):
         ang = -math.pi / 2 + i * 2 * math.pi / 20
         x, y = cx + R * math.cos(ang), cy + R * math.sin(ang)
@@ -54,26 +61,21 @@ def hero():
             b.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="19" fill="#0B1220" stroke="{c}" stroke-width="2.5"/>'
                      f'<circle cx="{x:.1f}" cy="{y-4:.1f}" r="4.2" fill="{c}"/>'
                      f'<path d="M{x-7.5:.1f} {y+9:.1f}a7.5 6.5 0 0 1 15 0z" fill="{c}"/>')
-    b.append(f'<circle cx="{cx}" cy="{cy}" r="56" fill="url(#core)" filter="url(#sh)"/>'
-             f'<circle cx="{cx}" cy="{cy}" r="56" fill="none" stroke="#BAE6FD" stroke-opacity="0.6" stroke-width="2">'
-             f'<animate attributeName="r" values="56;70;56" dur="3s" repeatCount="indefinite"/>'
-             f'<animate attributeName="stroke-opacity" values="0.6;0;0.6" dur="3s" repeatCount="indefinite"/></circle>'
-             f'<text x="{cx}" y="{cy-6}" text-anchor="middle" font-size="10" font-weight="700" fill="#E0F2FE" letter-spacing="2">CLAUDE</text>'
-             f'<text x="{cx}" y="{cy+12}" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Orchestrateur</text>')
-    # left text
-    b.append('<rect x="64" y="70" width="210" height="30" rx="15" fill="#0EA5E9" fill-opacity="0.15" stroke="#38BDF8" stroke-opacity="0.5"/>'
-             '<text x="169" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#7DD3FC" letter-spacing="1" font-family="ui-monospace,Menlo,Consolas,monospace">/review-multi-agent</text>')
-    b.append('<text x="64" y="160" font-size="50" font-weight="800" fill="#F8FAFC">Recette Salesforce</text>'
-             '<text x="64" y="218" font-size="50" font-weight="800" fill="url(#core)">multi-agents</text>')
-    b.append('<text x="64" y="262" font-size="20" fill="#94A3B8">Choisis ton domaine : 20 personas naissent de ton org</text>'
-             '<text x="64" y="290" font-size="20" fill="#94A3B8">et testent ton app. Un rapport. Ton GO. Corrections en parallèle.</text>')
-    pills = [("20", "agents", "#38BDF8"), ("1", "CEO toujours", "#FBBF24"), ("∞", "domaines", "#A78BFA"), ("1", "GO", "#22C55E")]
-    x = 64
-    for big, small, c in pills:
-        w = 40 + len(big) * 14 + len(small) * 8
-        b.append(f'<rect x="{x}" y="330" width="{w}" height="44" rx="12" fill="{c}" fill-opacity="0.12" stroke="{c}" stroke-opacity="0.45"/>'
-                 f'<text x="{x+16}" y="358" font-size="19" font-weight="800" fill="{c}">{big}<tspan font-size="14" font-weight="500" fill="#CBD5E1" dx="8">{small}</tspan></text>')
-        x += w + 14
+    b.append(cloud(cx, cy - 8, 58, "url(#sf)", 'filter="url(#sh)"'))
+    b.append(f'<text x="{cx}" y="{cy+6}" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">Ton org</text>'
+             f'<text x="{cx}" y="{cy+26}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#E0F2FE" letter-spacing="1">Salesforce</text>')
+    b.append(f'<rect x="{cx-70}" y="{cy+62}" width="140" height="24" rx="12" fill="#0B1220" stroke="#A78BFA"/>'
+             f'<text x="{cx}" y="{cy+78}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C4B5FD">orchestré par Claude</text>')
+    b.append('<rect x="64" y="64" width="250" height="32" rx="16" fill="#00A1E0" fill-opacity="0.16" stroke="#00A1E0" stroke-opacity="0.7"/>'
+             + cloud(88, 79, 9, "#00A1E0") +
+             '<text x="106" y="85" font-size="13" font-weight="800" fill="#7DD3FC" letter-spacing="2">SALESFORCE · RECETTE</text>')
+    b.append('<text x="64" y="160" font-size="52" font-weight="800" fill="#F8FAFC">Recette <tspan fill="#00A1E0">Salesforce</tspan></text>'
+             '<text x="64" y="218" font-size="52" font-weight="800" fill="url(#core)">par agents IA</text>')
+    b.append('<text x="64" y="262" font-size="20" fill="#94A3B8">3 à 20 rôles métier testent ton app Salesforce en parallèle.</text>'
+             '<text x="64" y="290" font-size="20" fill="#94A3B8">Un rapport. Ton GO. Les corrections.</text>')
+    b.append('<rect x="64" y="326" width="330" height="54" rx="14" fill="#0B1220" stroke="#00A1E0" stroke-width="2"/>'
+             '<text x="86" y="361" font-size="22" font-weight="700" fill="#E0F2FE" font-family="ui-monospace,Menlo,Consolas,monospace">'
+             '<tspan fill="#00A1E0">&gt;</tspan> /review-multi-agent</text>')
     return svg(W, H, "".join(b))
 
 
@@ -108,16 +110,16 @@ def icon(kind, x, y, c):
 def workflow():
     W, H = 1280, 470
     steps = [
-        ("ask", "#FBBF24", "Cadrage", ["Domaine ?", "Consigne libre", "Ex. « app Sales »"]),
-        ("check", "#38BDF8", "Connexion", ["Sandbox vérifiée", "MCP détectés", "Carte du périmètre"]),
-        ("people", "#FB923C", "Personas", ["CEO toujours", "Le reste : ton org", "Filtrés périmètre"]),
-        ("agents", "#A78BFA", "20 agents", ["En parallèle", "Indépendants", "Vrais parcours"]),
-        ("merge", "#F59E0B", "Rapport", ["Doublons fusionnés", "P0 → P3", "Lots sans conflit"]),
+        ("ask", "#FBBF24", "3 questions", ["Domaine ?", "Nb agents 3–20", "Consigne libre"]),
+        ("check", "#00A1E0", "Salesforce", ["MCP connecté", "1 seul user", "Carte de l'app"]),
+        ("people", "#FB923C", "Rôles métier", ["CEO toujours", "Choisis par l'IA", "Selon périmètre"]),
+        ("agents", "#A78BFA", "N agents", ["Tous en parallèle", "Vrais parcours", "Données jetables"]),
+        ("merge", "#F59E0B", "Rapport", ["Bugs &amp; manques", "P0 → P3", "Données nettoyées"]),
         ("go", "#22C55E", "TON GO", ["GO · GO L1,L3", "GO P0 · NO GO", "Rien avant"]),
-        ("build", "#F472B6", "Correction", ["1 agent / lot", "Sandbox seule", "Re-test ciblé"]),
+        ("build", "#F472B6", "Corrections", ["1 agent / lot", "Sandbox seule", "Re-test parallèle"]),
     ]
     b = ['<text x="640" y="58" text-anchor="middle" font-size="28" font-weight="800" fill="#F8FAFC">Le cycle complet</text>',
-         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">une commande, deux questions, zéro modification sans ton GO</text>']
+         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">une commande · trois questions · aucune modification de ton org sans ton GO</text>']
     cw, ch, gap, x0, y0 = 160, 290, 14, 31, 130
     # connecting rail
     b.append(f'<line x1="{x0+cw/2}" y1="{y0+62}" x2="{x0+6*(cw+gap)+cw/2}" y2="{y0+62}" stroke="#1E293B" stroke-width="4"/>')
@@ -146,7 +148,7 @@ def workflow():
 def personas():
     W, H = 1280, 700
     b = ['<text x="640" y="58" text-anchor="middle" font-size="28" font-weight="800" fill="#F8FAFC">Exemple : domaine BTP</text>',
-         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">personas générés depuis l\'org et le périmètre · le CEO est toujours là</text>']
+         '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">rôles métier choisis par l\'orchestrateur selon ton domaine et ton périmètre · le CEO est toujours là</text>']
     colw, x0, y0 = 196, 27, 124
     for gi, (gname, c, ps) in enumerate(GROUPS):
         x = x0 + gi * (colw + 10)
@@ -182,25 +184,28 @@ def personas():
 
 # ------------------------------------------------------------------ REPORT
 def report():
-    W, H = 1280, 690
+    W, H = 1280, 710
     random.seed(7)
     b = ['<text x="640" y="58" text-anchor="middle" font-size="28" font-weight="800" fill="#F8FAFC">Ce que tu reçois</text>',
          '<text x="640" y="86" text-anchor="middle" font-size="16" fill="#64748B">rapport consolidé HTML + Markdown · aperçu illustratif</text>']
-    X, Y, WW, HH = 70, 116, 1140, 540
+    X, Y, WW, HH = 70, 116, 1140, 560
     b.append(f'<rect x="{X}" y="{Y}" width="{WW}" height="{HH}" rx="16" fill="#F8FAFC" filter="url(#sh)"/>')
     b.append(f'<path d="M{X} {Y+16}a16 16 0 0 1 16 -16h{WW-32}a16 16 0 0 1 16 16v20h-{WW}z" fill="#E2E8F0"/>')
     for i, c in enumerate(["#EF4444", "#F59E0B", "#22C55E"]):
         b.append(f'<circle cx="{X+22+i*18}" cy="{Y+18}" r="5.5" fill="{c}"/>')
     b.append(f'<rect x="{X+400}" y="{Y+8}" width="340" height="20" rx="10" fill="#fff"/><text x="{X+570}" y="{Y+22}" text-anchor="middle" font-size="11" fill="#64748B">recette-runs/20261118-2000/rapport.html</text>')
+    b.append(f'<rect x="{X}" y="{Y+36}" width="{WW}" height="34" fill="#0176D3"/>' + cloud(X + 30, Y + 51, 9, "#fff") +
+             f'<text x="{X+50}" y="{Y+58}" font-size="14" font-weight="800" fill="#fff">Recette Salesforce — rapport consolidé</text>'
+             f'<text x="{X+WW-20}" y="{Y+58}" text-anchor="end" font-size="12" fill="#BAE6FD">domaine BTP · 20 agents · toute l\'org</text>')
     kp = [("Verdict", "RÉSERVES", "#EA580C"), ("Personas", "20/20", "#0F172A"), ("Constats", "37", "#0F172A"),
-          ("Bloquants", "3", "#DC2626"), ("Majeurs", "11", "#EA580C"), ("Lots", "9", "#2563EB")]
+          ("Bloquants", "3", "#DC2626"), ("Majeurs", "11", "#EA580C"), ("Données test", "0 reste", "#16A34A")]
     for i, (k, v, c) in enumerate(kp):
         x = X + 24 + i * 182
-        b.append(f'<rect x="{x}" y="{Y+56}" width="168" height="74" rx="10" fill="#fff" stroke="#E2E8F0"/>'
-                 f'<text x="{x+14}" y="{Y+78}" font-size="12" fill="#64748B">{k}</text>'
-                 f'<text x="{x+14}" y="{Y+112}" font-size="{22 if len(v) > 5 else 28}" font-weight="800" fill="{c}">{v}</text>')
+        b.append(f'<rect x="{x}" y="{Y+86}" width="168" height="62" rx="10" fill="#fff" stroke="#E2E8F0"/>'
+                 f'<text x="{x+14}" y="{Y+104}" font-size="12" fill="#64748B">{k}</text>'
+                 f'<text x="{x+14}" y="{Y+136}" font-size="{22 if len(v) > 5 else 28}" font-weight="800" fill="{c}">{v}</text>')
     # heatmap
-    hx, hy = X + 24, Y + 160
+    hx, hy = X + 24, Y + 178
     b.append(f'<text x="{hx}" y="{hy}" font-size="14" font-weight="800" fill="#0F172A">Scores par persona</text>')
     heat = ["#FCA5A5", "#FDBA74", "#FDE047", "#86EFAC", "#4ADE80"]
     cols = ["Couv.", "Flui.", "Faci.", "Acce.", "Fiab."]
@@ -221,7 +226,7 @@ def report():
             b.append(f'<rect x="{bx+64+j*30}" y="{by+1}" width="26" height="22" rx="4" fill="{heat[v]}"/>'
                      f'<text x="{bx+64+j*30+13}" y="{by+16}" text-anchor="middle" font-size="11" font-weight="700" fill="#1F2937">{v+1}</text>')
     # lots
-    lx, ly = X + 560, Y + 160
+    lx, ly = X + 560, Y + 178
     b.append(f'<text x="{lx}" y="{ly}" font-size="14" font-weight="800" fill="#0F172A">Lots proposés · en attente de ton GO</text>')
     lots = [("L1", "P0", "Flow DA → Commande", "acheteur · chef de chantier · conducteur", "#DC2626", "#FEE2E2"),
             ("L2", "P0", "Partage Commandes portail", "fournisseur · sous-traitant", "#DC2626", "#FEE2E2"),

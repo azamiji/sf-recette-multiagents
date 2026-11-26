@@ -182,7 +182,7 @@ def stats(reports, groupes, attendus):
                 cnt[p["statut"]] += 1
         par_persona.append({
             "persona_id": r["persona_id"], "label": r.get("persona_label", r["persona_id"]),
-            "verdict": r.get("verdict"), "mode_acces": r.get("mode_acces"),
+            "verdict": r.get("verdict"), "acces": r.get("acces") or r.get("mode_acces"),
             "scores": {k: sc.get(k) for k in SCORES}, "parcours": cnt,
             "nb_constats": len(r["constats"]), "limites": r.get("limites", ""),
             "synthese": r.get("synthese", ""),
@@ -200,11 +200,18 @@ def stats(reports, groupes, attendus):
     else:
         global_v = "PRET" if verdicts else "INCONNU"
     recus = {p["persona_id"] for p in par_persona}
+    cree = [d for r in reports for d in (r.get("donnees_creees") or [])]
+    restants = [dict(d, persona=r["persona_id"]) for r in reports for d in (r.get("donnees_creees") or [])
+                if d.get("supprime") is not True]
+    sans_nettoyage = [r["persona_id"] for r in reports
+                      if r.get("donnees_creees") and not r.get("nettoyage")]
     return {
         "verdict_global": global_v, "moyennes": moy, "constats_par_severite": sev,
         "nb_constats_bruts": sum(len(r["constats"]) for r in reports),
         "nb_constats_dedupliques": len(groupes), "par_persona": par_persona,
         "personas_manquantes": [p for p in attendus if p not in recus],
+        "donnees": {"creees": len(cree), "supprimees": len(cree) - len(restants),
+                    "restantes": restants, "rapports_sans_nettoyage": sans_nettoyage},
     }
 
 
@@ -224,10 +231,13 @@ def render_md(run_id, st, groupes, lots, erreurs, meta):
          f"{st['nb_constats_bruts']} constats bruts → {st['nb_constats_dedupliques']} après dédoublonnage.", "",
          "Constats par sévérité : " + ", ".join(f"{k} {v}" for k, v in st["constats_par_severite"].items()), "",
          "Scores moyens (0-5) : " + ", ".join(f"{k} {v}" for k, v in st["moyennes"].items()), ""]
+    dn = st["donnees"]
+    L += [f"Données de test : {dn['creees']} créées, {dn['supprimees']} supprimées par les agents"
+          + (f" — **{len(dn['restantes'])} à supprimer** (voir nettoyage.json)" if dn["restantes"] else " — rien ne reste"), ""]
     if st["personas_manquantes"]:
         L += [f"⚠️ Personas sans rapport : {', '.join(st['personas_manquantes'])}", ""]
     L += ["## Vue par persona", "", md_table(
-        [[p["label"], p["verdict"], p["mode_acces"], *[p["scores"][k] for k in SCORES],
+        [[p["label"], p["verdict"], p["acces"], *[p["scores"][k] for k in SCORES],
           f"{p['parcours']['OK']}/{sum(p['parcours'].values())}", p["nb_constats"]] for p in st["par_persona"]],
         ["Persona", "Verdict", "Accès", *SCORES, "Parcours OK", "Constats"]), ""]
     L += ["## Constats consolidés", "", md_table(
@@ -293,8 +303,9 @@ def render_html(run_id, st, groupes, lots, erreurs, meta):
     kpis = "".join(f'<div class="kpi">{e(k)}<b>{e(v)}</b></div>' for k, v in [
         ("Verdict", st["verdict_global"]), ("Personas", len(st["par_persona"])),
         ("Constats", st["nb_constats_dedupliques"]), ("Bloquants", sev["BLOQUANT"]),
-        ("Majeurs", sev["MAJEUR"]), ("Lots", len(lots))])
-    pers = [f"<tr><td>{e(p['label'])}</td><td>{badge(p['verdict'])}</td><td>{e(p['mode_acces'])}</td>"
+        ("Majeurs", sev["MAJEUR"]), ("Lots", len(lots)),
+        ("Données test restantes", len(st["donnees"]["restantes"]))])
+    pers = [f"<tr><td>{e(p['label'])}</td><td>{badge(p['verdict'])}</td><td>{e(p['acces'])}</td>"
             + "".join(score(p["scores"][k]) for k in SCORES)
             + f"<td>{p['parcours']['OK']}/{sum(p['parcours'].values())}</td><td>{p['nb_constats']}</td>"
               f"<td>{e(p['synthese'])}</td></tr>" for p in st["par_persona"]]
@@ -367,10 +378,12 @@ def main():
                                                      ensure_ascii=False, indent=2), encoding="utf-8")
     (run_dir / "rapport.md").write_text(render_md(run_id, st, groupes, lots, erreurs, meta), encoding="utf-8")
     (run_dir / "rapport.html").write_text(render_html(run_id, st, groupes, lots, erreurs, meta), encoding="utf-8")
+    (run_dir / "nettoyage.json").write_text(json.dumps({
+        "prefixe": meta.get("data_prefix", f"RCT{run_id}"), **st["donnees"]}, ensure_ascii=False, indent=2), encoding="utf-8")
     (run_dir / "GO_PENDING.md").write_text(render_go(run_id, st, lots, groupes), encoding="utf-8")
     print(json.dumps({"verdict_global": st["verdict_global"], "personas": len(reports),
                       "constats_bruts": st["nb_constats_bruts"], "constats": len(groupes),
-                      "lots": len(lots), "personas_manquantes": st["personas_manquantes"],
+                      "lots": len(lots), "donnees_restantes": len(st["donnees"]["restantes"]), "personas_manquantes": st["personas_manquantes"],
                       "erreurs_format": len(erreurs)}, ensure_ascii=False, indent=2))
 
 

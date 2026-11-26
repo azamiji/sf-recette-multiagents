@@ -1,58 +1,58 @@
-# Génération dynamique des personas (phase 1)
+# Imaginer les rôles fonctionnels (phase 1)
 
-Objectif : 20 personas (ou le nombre demandé) **propres à ce projet**, pas une liste générique. L'org réelle dit qui utilise l'application ; le domaine dit qui *devrait* l'utiliser ; le périmètre dit ce qu'on regarde. Les écarts entre les deux premiers sont souvent les constats les plus utiles (« aucun rôle Contrôle de gestion n'a accès aux marges »).
+Un persona est une **fonction métier** dans l'entreprise cliente — CEO, directeur achats, DAF, acheteur, comptable, chef de projet, chef de chantier, chargé de clientèle, gestionnaire sinistres… — pas un profil, un rôle ou un permission set Salesforce. Tous les agents utilisent le même utilisateur MCP ; ce qui les distingue, c'est ce que leur fonction attend de l'application.
+
+C'est l'orchestrateur qui choisit ces fonctions, avec son jugement : il connaît le métier, il a la carte de l'app, il a la consigne. Le catalogue n'est qu'une source d'inspiration.
 
 ## Entrées
 
-- `run.json` : domaine, consigne libre, nombre demandé (20 par défaut).
-- `context.md` : carte de l'app dans le périmètre (apps, objets, flows, pages, sites, rapports).
-- Utilisateurs actifs : profil, rôle, permission sets, `UserType`.
-- `references/domain-catalog.md` (et `personas-construction.md` pour le BTP).
+- `run.json` : domaine, nombre d'agents N (3 à 20), consigne.
+- `context.md` : ce que l'app fait dans le périmètre (objets, processus, flows, approbations, rapports, portails).
 
-## Règles
+## Démarche
 
-1. **CEO toujours**, id `ceo`. Sa mission s'adapte au périmètre : sur « uniquement l'app Sales », il juge le pilotage commercial (pipeline, prévisions, tableaux de bord), pas les chantiers.
+1. **Comprendre ce que l'app fait** : liste les processus métier présents dans le périmètre (ex. « demande d'achat → commande → réception → facture », « lead → opportunité → devis »). Un processus = une chaîne d'objets et d'automatisations.
 
-2. **Personas issus de l'org (source ORG)** — la majorité des places. Regroupe les utilisateurs actifs du périmètre par combinaison *profil + rôle + permission sets clés* ; chaque groupe distinct qui a un vrai usage métier du périmètre devient un candidat. Indices d'usage : accès en écriture aux objets du périmètre, onglets de l'app, files d'attente, étapes d'approbation, assignation de records.
-   - Types portail (`PowerPartner`, `CspLitePortal`, `PowerCustomerSuccess`…) → personas externes (fournisseur, partenaire, client, agent…) s'ils accèdent au périmètre.
-   - Nomme le persona par son **métier** (« Chargé de clientèle »), pas par le nom technique du profil (`CDM_Agent_Profile`) — le profil va dans le champ utilisateur.
+2. **CEO toujours** (id `ceo`) : il juge le pilotage du périmètre — tableaux de bord, indicateurs, vision d'ensemble.
 
-3. **Personas issus du domaine (source CATALOGUE)** — pour les rôles que le domaine attend dans ce périmètre mais que l'org ne porte pas (aucun profil/permission set correspondant). Limite-les à environ un quart des places : ils testent avec l'utilisateur le plus proche ou en mode `ANALYSE_DROITS`, et leurs constats seront surtout des `MANQUE_FONCTIONNEL`.
+3. **Pour chaque processus, qui y intervient dans une vraie entreprise du domaine ?** Celui qui initie, celui qui exécute, celui qui valide, celui qui contrôle, celui qui consulte, l'acteur externe (client, fournisseur, partenaire) s'il y a un portail ou s'il devrait y en avoir un. Ce sont tes candidats.
 
-4. **Rôles transverses** à considérer selon les places restantes : administrateur Salesforce (sécurité, droits, santé technique), un rôle de contrôle (finance, conformité, qualité, audit selon le domaine), un utilisateur mobile/terrain si l'app est utilisée en mobilité.
+4. **Ajouter les fonctions attendues mais absentes** : si le métier implique une fonction que l'app semble ignorer (aucun processus ne la sert : contrôle de gestion sans rapport de marge, QHSE sans objet incident…), garde-en une ou deux. Leurs constats seront des `MANQUE_FONCTIONNEL` — souvent les plus utiles.
 
-5. **Le périmètre filtre tout** : un candidat dont le métier ne touche pas le périmètre est écarté, même s'il existe dans l'org. Les exclusions explicites de la consigne (« pas le portail ») sont respectées.
+5. **Choisir N rôles** : CEO + les N−1 candidats qui couvrent le plus de processus différents, avec priorité aux fonctions où l'enjeu est fort (argent, client, conformité, sécurité). Si N est petit (3–5), prends les fonctions les plus centrales du périmètre ; si N est grand, ajoute contrôle, support, externes, terrain/mobile.
 
-6. **Pas de doublons** : deux personas avec le même profil et les mêmes parcours = un seul. Si le périmètre ne justifie pas le nombre demandé, ne fabrique pas de faux rôles : prends moins de personas et dis pourquoi en une ligne. À l'inverse, s'il y a plus de candidats que de places, priorise : volume d'utilisateurs, criticité métier (argent, conformité, client), diversité des droits.
+6. **Respecter la consigne** : rien hors périmètre ; exclusions respectées.
 
-7. **Parcours concrets** : 4 à 6 parcours par persona, rédigés comme des tâches métier et rattachés aux objets/flows/pages réels de `context.md` (ex. « Convertir un lead en opportunité — Lead, flow `Lead_Qualification` »). Un parcours attendu sans support dans l'org reste dans la liste : l'agent le notera `NON_COUVERT`.
+7. **Pas de doublons** : deux fonctions aux parcours identiques = une seule. Si le périmètre ne justifie pas N rôles distincts, prends-en moins et dis pourquoi en une ligne.
+
+8. **Parcours concrets** : 4 à 6 par rôle, rédigés comme des tâches de sa journée et rattachés aux objets/flows/pages réels (« Valider une commande au-dessus de 10 000 € — `Commande__c`, approbation `Validation_DA` »). Un parcours attendu sans support dans l'app reste dans la liste : l'agent le notera `NON_COUVERT`.
 
 ## Format de `personas.md`
 
-Le titre `## <id> — <Libellé>` est lu par `init_run.py` : `id` en minuscules, chiffres et `_` uniquement.
+Le titre `## <id> — <Libellé>` est lu par `init_run.py` : `id` en minuscules, chiffres et `_`.
 
 ```markdown
 ## ceo — CEO / Directeur général
-- Source : ORG (profil Direction, 2 utilisateurs)
-- Accès : I — utilisateur de test : ceo.demo@client.sbx (LOGIN_AS)
+- Type : interne
 - Mission : piloter le pipeline et les prévisions de vente en un coup d'œil.
+- Processus : pilotage commercial
 - Parcours :
-  1. Trouver le tableau de bord commercial en < 3 clics (Dashboard `Sales_Overview`).
+  1. Trouver le tableau de bord commercial en moins de 3 clics (Dashboard `Sales_Overview`).
   2. …
-- Vigilance : cohérence des chiffres entre rapports, fraîcheur, mobile.
+- Vigilance : cohérence des chiffres entre rapports, fraîcheur des données, mobile.
 
-## charge_clientele — Chargé de clientèle
-- Source : ORG (profil Agent + permission set `Credit_Conso`, 48 utilisateurs)
-- Accès : I — …
+## directeur_achats — Directeur des achats
+- Type : interne
+- …
+
+## fournisseur — Fournisseur
+- Type : externe (portail ; testé via le même utilisateur MCP, cloisonnement vérifié par la configuration)
+- …
 ```
 
-`Accès` : `I` interne, `E` externe (portail), `A` admin.
+## Présentation avant lancement
 
-## Présentation à l'utilisateur
+| # | Rôle | Mission (1 ligne) | Processus couverts |
+|---|---|---|---|
 
-Tableau compact avant lancement :
-
-| # | Persona | Source | Utilisateur / mode | Mission (1 ligne) |
-|---|---|---|---|---|
-
-Sous le tableau, une ligne pour les rôles écartés notables (« Chef de chantier écarté : hors périmètre Sales ») et une ligne pour les personas en mode dégradé (pas d'utilisateur de test).
+Sous le tableau : une ligne pour les fonctions écartées notables (« Chef de chantier écarté : hors périmètre Sales »).

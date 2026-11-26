@@ -8,8 +8,7 @@
   "run_id": "20261118-1930",
   "persona_id": "acheteur",
   "persona_label": "Acheteur",
-  "utilisateur_teste": "acheteur.test@client.sandbox (profil Achats)",
-  "mode_acces": "LOGIN_AS",
+  "acces": "MCP",
   "debut": "2026-11-18T19:40:00Z",
   "fin": "2026-11-18T20:25:00Z",
   "verdict": "PRET_AVEC_RESERVES",
@@ -47,7 +46,10 @@
       "suggestion": "Mapper Chantier__c dans le flow de conversion."
     }
   ],
-  "donnees_creees": [{"objet": "Commande__c", "id": "a0X…", "nom": "RCT20261118-1930_ACHETEUR_CMD1"}],
+  "donnees_creees": [
+    {"objet": "Commande__c", "id": "a0X…", "nom": "RCT20261118-1930_ACHETEUR_CMD1", "supprime": true}
+  ],
+  "nettoyage": {"statut": "COMPLET", "restants": 0, "commentaire": ""},
   "limites": "Pas de test mobile : aucun appareil disponible."
 }
 ```
@@ -56,7 +58,8 @@
 
 | Champ | Valeurs |
 |---|---|
-| `mode_acces` | `IDENTIFIANTS`, `LOGIN_AS`, `PORTAIL`, `ANALYSE_DROITS`, `ADMIN` |
+| `acces` | `MCP` (utilisateur partagé), `MCP+NAVIGATEUR`, `LECTURE_SEULE` (production) |
+| `nettoyage.statut` | `COMPLET` (tout supprimé, vérifié), `PARTIEL` (des restants, listés avec `supprime: false`), `AUCUNE_DONNEE` (rien créé) |
 | `verdict` | `PRET`, `PRET_AVEC_RESERVES`, `NON_PRET` |
 | `scores.*` | entier 0–5 (0 = inexistant, 5 = excellent). Couverture = part des parcours attendus réellement supportés par l'app |
 | `parcours[].statut` | `OK`, `PARTIEL`, `KO`, `NON_COUVERT` (l'app ne le permet pas), `BLOQUE` (empêché par un bug/accès), `NON_TESTE` (limite du test) |

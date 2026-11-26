@@ -59,6 +59,6 @@ Message final : 5 lignes max.
 
 1. Récupère chaque `lots/<lot>.md` ; un lot en échec n'empêche pas les autres.
 2. Fusionne les branches dans `recette/<run_id>/integration`, relance la validation globale, déploie sur la sandbox.
-3. Phase 6 : re-test (variante en bas de `agent-brief.md`) des seules personas présentes dans `personas_impactees` des constats traités.
+3. Phase 6 : re-test **en parallèle, dans le même tour**, des seules personas présentes dans `personas_impactees` des constats traités (variante en bas de `agent-brief.md`, mêmes règles de données éphémères), puis balayage du préfixe comme en phase 3.
 4. `rapport-final.md` : tableau constat → lot → résultat re-test ; régressions ; reste à faire ; décisions toujours ouvertes.
-5. Propose (sans exécuter) : PR vers la branche principale, nettoyage des données `RCT<run_id>_*`, création de tickets pour le hors-périmètre.
+5. Propose (sans exécuter) : PR vers la branche principale, création de tickets pour le hors-périmètre.

@@ -31,15 +31,16 @@ def parse_personas(md_path: Path):
     for p in personas:
         body = "\n".join(p.pop("body")).strip()
         p["body"] = body
-        acc = re.search(r"Accès\s*:\s*([IEA])", body)
-        p["acces"] = acc.group(1) if acc else "I"
+        typ = re.search(r"(?:Type|Accès)\s*:\s*([^\n—-]+)", body)
+        t = (typ.group(1).strip().lower() if typ else "i")
+        p["acces"] = "E" if t.startswith(("e", "externe")) else ("A" if t.startswith(("a", "admin")) else "I")
     return personas
 
 
 def ensure_gitignore(root: Path):
     gi = root / ".gitignore"
     lines = gi.read_text(encoding="utf-8").splitlines() if gi.exists() else []
-    wanted = ["personas.local.yaml", "recette-runs/*/evidence/"]
+    wanted = ["recette-runs/*/evidence/"]
     missing = [w for w in wanted if w not in lines]
     if missing:
         with gi.open("a", encoding="utf-8") as f:
@@ -54,6 +55,7 @@ def main():
     ap.add_argument("--personas")
     ap.add_argument("--domaine")
     ap.add_argument("--consigne")
+    ap.add_argument("--nb", type=int, help="nombre d'agents (3 à 20)")
     ap.add_argument("--run-id")
     ap.add_argument("--only", help="ids séparés par des virgules")
     a = ap.parse_args()
@@ -73,6 +75,11 @@ def main():
         meta["domaine"] = a.domaine
     if a.consigne is not None:
         meta["consigne"] = a.consigne
+    if a.nb is not None:
+        nb = max(3, min(20, a.nb))
+        if nb != a.nb:
+            print(f"Nombre d'agents ramené à {nb} (bornes 3-20).", file=sys.stderr)
+        meta["nb_agents"] = nb
     data_prefix = meta["data_prefix"]
 
     if a.personas:
@@ -84,6 +91,8 @@ def main():
             personas = [p for p in personas if p["id"] in keep]
         if "ceo" not in {p["id"] for p in personas} and not a.only:
             print("ATTENTION : aucun persona 'ceo' — le CEO doit toujours être présent.", file=sys.stderr)
+        if meta.get("nb_agents") and len(personas) > meta["nb_agents"] and not a.only:
+            print(f"ATTENTION : {len(personas)} personas pour {meta['nb_agents']} agents demandés.", file=sys.stderr)
         for p in personas:
             brief = run_dir / "briefs" / f"{p['id']}.md"
             (run_dir / "evidence" / p["id"]).mkdir(exist_ok=True)
@@ -95,6 +104,7 @@ def main():
                 f"persona_id: {p['id']}\n"
                 f"domaine: {meta['domaine']}\n"
                 f"consigne: {meta['consigne'] or '(aucune)'}\n"
+                f"acces: MCP partagé (même utilisateur pour tous les agents)\n"
                 f"data_prefix: {data_prefix}_{p['id'].upper()}_\n"
                 f"rapport_json: {run_dir / 'reports' / (p['id'] + '.json')}\n"
                 f"rapport_md: {run_dir / 'reports' / (p['id'] + '.md')}\n\n"

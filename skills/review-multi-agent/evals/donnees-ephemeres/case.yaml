@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: donnees-ephemeres
+expected_outcome: |
+  4 agents lancés en parallèle (dont le CEO) sur le processus achats ; toutes les données de test portent le préfixe du run et sont supprimées à la fin ; le rapport indique 0 donnée restante.
